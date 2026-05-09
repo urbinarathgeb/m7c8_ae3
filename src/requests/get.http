@@ -1,0 +1,6 @@
+@baseUrl = http://localhost:
+@port = 3001
+@url = {{baseUrl}}{{port}}
+
+### Obtener todas las dimensiones (normal)
+GET {{url}}/api/dimensions
