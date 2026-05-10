@@ -52,10 +52,6 @@ npm start
 - Datos seed (roles, permisos, dimensiones, configuraciones de stack)
 - Endpoint básico de dimensiones
 
-### Próxima: Fase 2 - Autenticación
-- JWT + bcrypt para gestión de usuarios
-- Roles y permisos
-
 ---
 
 ## Endpoints Actuales
@@ -63,6 +59,7 @@ npm start
 | Método | Ruta | Descripción |
 |--------|-----|-------------|
 | GET | `/api/dimensions` | Listar todas las dimensiones |
+| GET | `/api/inventory` | Listar inventario completo |
 
 ---
 
@@ -102,17 +99,19 @@ src/
 ├── config/
 │   └── db.config.js        # Pool de PostgreSQL
 ├── controllers/
-│   └── dimensions.controller.js
+│   ├── dimensions.controller.js
+│   └── inventory.controller.js
+├── services/
+│   ├── query.helper.js     # Helper reutilizable para queries
+│   ├── dimension.service.js
+│   └── inventory.service.js
 ├── routes/
-│   └── dimensions.routes.js
+│   ├── dimensions.routes.js
+│   └── inventory.routes.js
 ├── middlewares/
 │   ├── errorHandler.middleware.js
 │   └── errorSimulator.middleware.js
 └── index.js
-
-db/
-├── schema.sql              # Estructura de tablas
-└── seed.sql                # Datos iniciales
 ```
 
 ---
@@ -132,17 +131,59 @@ Para probar el manejo de errores:
 
 ---
 
-## Roadmap
+## Seguridad: Consultas Parametrizadas
 
-| Fase | Descripción | Estado |
-|------|-------------|--------|
-| 1 | Estructura + Base de Datos | ✅ |
-| 2 | Autenticación y Autorización | ⏳ |
-| 3 | CRUD Dimensiones | ⏳ |
-| 4 | CRUD Stack Configurations | ⏳ |
-| 5 | CRUD Inventory Packages | ⏳ |
-| 6 | Movimientos y Trazabilidad | ⏳ |
-| 7 | Reportes y Resúmenes | ⏳ |
-| 8 | Validaciones y Mejoras | ⏳ |
+**¿Cómo nos protegen las consultas parametrizadas frente a ataques de SQL Injection?**
 
-Ver `PROJECT_PLAN.md` para detalles completos.
+Las consultas parametrizadas (también llamadas *prepared statements*) separan la estructura de la query de los datos ingresados por el usuario.
+
+**Ejemplo vulnerable:**
+```js
+// ❌ NUNCA HACER ESTO
+pool.query(`SELECT * FROM users WHERE email = '${email}'`);
+```
+
+Si el usuario ingresa: `email@email.com' OR '1'='1`, la query se transforma en un SQL Injection.
+
+**Con parámetros:**
+```js
+// ✅ SEGURO
+pool.query('SELECT * FROM users WHERE email = $1', [email]);
+```
+
+De esta forma (con parámetros), el driver de PostgreSQL:
+1. Primero envía la estructura de la query al servidor.
+2. Luego envía los datos, **por separado**.
+3. El servidor nunca interpreta los datos como código SQL
+
+El atacante no puede modificar la lógica de la query porque los parámetros se tratan como *literales*, no como parte del SQL.
+
+---
+
+### ¿Qué es SQL Injection?
+
+Es una técnica donde un atacante aprovecha campos de entrada (formularios, URLs, headers) para inyectar código SQL malicioso. El servidor ejecuta ese código como parte de la consulta original.
+
+### ¿Qué puede provocar?
+
+| Impacto | Descripción |
+|---------|-------------|
+| **Robo de datos** | Extraer toda la base de datos (usuarios, contraseñas, datos financieros) |
+| **Bypass de autenticación** | Acceder como administrador sin conocer credenciales |
+| **Modificación de datos** | Eliminar, alterar o insertar registros maliciosos |
+| **Destrucción de datos** | Ejecutar `DROP TABLE` para borrar tablas completas |
+| **Ejecución de comandos del SO** | En casos graves, ejecutar comandos en el servidor |
+
+### Ejemplo concreto
+
+Si un atacante ingresa `' OR '1'='1` en el campo de login:
+
+```sql
+-- Query original intended:
+SELECT * FROM users WHERE email = 'usuario' AND password = '123'
+
+-- Query transformed by injection:
+SELECT * FROM users WHERE email = '' OR '1'='1' AND password = ''
+```
+
+La condición `'1'='1'` siempre es verdadera, por lo que la query devuelve todos los usuarios, permitiendo acceso no autorizado.

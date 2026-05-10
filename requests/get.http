@@ -4,3 +4,6 @@
 
 ### Obtener todas las dimensiones (normal)
 GET {{url}}/api/dimensions
+
+### Obtener todas las dimensiones (normal)
+GET {{url}}/api/inventory
