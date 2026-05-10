@@ -26,7 +26,6 @@ Esta actividad está diseñada con el fin de conectar a una base de datos Postgr
 - Crear `endpoint` para obtener los datos de la base de datos.
 - Aplicar los archivos `try`y `catch`para los mensajes de errores.
 
-#### 3- Responde las siguientes preguntas prácticas, las cuales pueden entregarse en el `Github`en un Readme o PDF
+#### 3- Responde la siguiente pregunta práctica, la cual puede entregarse en el `Github`en un Readme o PDF
 
-- a. ¿Por qué es mejor utilizar un pool de conexión, en vez de una simple?
-- b. Genera un error en la conexión de la base de datos y explica qué tipo de error es.
+- a. ¿Cómo nos protegen las consultas parametrizadas frente a ataques de SQL Injection?
