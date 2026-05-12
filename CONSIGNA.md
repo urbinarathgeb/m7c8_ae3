@@ -1,31 +1,34 @@
-# Módulo 7 - Aprendizaje esperado nº1
+# Aprendizaje esperado nº3
 
-## Conectando y administrando una base de datos PostgreSQL con Node.js
+## Reto de Manipulación de Datos en Node.js
 
 ### Objetivo
+Desarrollar una API Node.js que permita la manipulación de datos.
 
-Desarrollar aplicación  `Node.js` que se conecta a una base de datos `PostgreSQL`.
+### Descripción
+Desarrollar una API en Node.js que permita la inserción, actualización y eliminación de registros en una base de datos PostgreSQL.
 
-### DESCRIPCIÓN
+### Instrucciones
 
-Esta actividad está diseñada con el fin de conectar a una base de datos PostgreSQL con Node.js, aplicando las librerías necesarias.
+#### Escenario del reto:
+Se puede utilizar la misma base que ya se está trabajando.
 
-### Instrucciones específicas
+#### 1- Insertar registros
+- Crear una función para insertar un registro nuevo.
+- La función debe recibir los datos en JSON a través de `request.body`.
+- Crear endpoint para insertar el registro.
+- Probar funcionalidad con `Postman`/ `Cliente Rest`.
 
-#### 1- Configurar el entorno de trabajo
+#### 2- Actualizar registros en la base de datos
+- Crear función para actualizar un registro.
+- El update debe recibir el parámetro id y cambiar un campo.
+- Crear endpoint para actualizar registro.
+- Probar funcionalidad con `Postman`/ `Cliente Rest`.
 
-- Inicializar proyecto `Node.js` `Express`.
-- Instalar las librerías necesarias.
-- Crear archivo .env con credenciales a conexión `PostgreSQL`.
-- Crear base de datos con al menos una tabla con 3 parámetros (debe existir id) e ingresar al menos 5 registros.
+#### 3- Eliminar registros de la base de datos
+- Crear función para eliminar un registro.
+- El delete debe recibir el parámetro id y eliminar
+- Crear endpoint para eliminar registro.
+- - Probar funcionalidad con `Postman`/ `Cliente Rest`.
 
-#### 2- Implementación de la conexión
-
-- Crear archivo `db.js`donde se implemente la conexión `Pool`a `PostgreSQL`
-- Crear un archivo `index.js` en donde se configure el servidor con `Expres.js` (debe contener middlewares).
-- Crear `endpoint` para obtener los datos de la base de datos.
-- Aplicar los archivos `try`y `catch`para los mensajes de errores.
-
-#### 3- Responde la siguiente pregunta práctica, la cual puede entregarse en el `Github`en un Readme o PDF
-
-- a. ¿Cómo nos protegen las consultas parametrizadas frente a ataques de SQL Injection?
+En cada uno de estos puntos se debe manejar los errores con `try/catch` y enviar códigos `HTTP`.
