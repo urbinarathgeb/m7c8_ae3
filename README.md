@@ -30,7 +30,6 @@ NODE_ENV=development
 2. Ejecutar el script SQL:
 
 ```bash
-# Recrear base de datos (schema + seeds)
 psql -U postgres -f db/schema.sql
 psql -U postgres -f db/seed.sql
 ```
@@ -47,48 +46,113 @@ npm start
 
 ## Estado del Proyecto
 
-### Fase 1 ✅ Completada
-- Base de datos completa con 9 tablas
-- Datos seed (roles, permisos, dimensiones, configuraciones de stack)
-- Endpoint básico de dimensiones
+### Fase 2 ✅ Completada
+- Schema simplificado (4 tablas + 2 vistas)
+- CRUD completo de stack_configurations
+- CRUD completo de dimensions
+- CRUD completo de inventory_packages
+- Endpoint de stock consolidado
+- Cálculo automático de unit_count y cubic_meters
+
+### Fase 3 ✅ Completada
+- Validación de tipos de datos (string/number)
+- Límites máximos en campos numéricos y de texto
+- Validación de fechas (formato YYYY-MM-DD, no futura)
+- Clases de errores personalizadas (AppError, ValidationError, NotFoundError, etc.)
+- Verificación de estado activo en dimensiones y stack_configs
 
 ---
 
-## Endpoints Actuales
+## Endpoints API
+
+### Stack Configurations
 
 | Método | Ruta | Descripción |
-|--------|-----|-------------|
+|--------|------|-------------|
+| GET | `/api/stack-configs` | Listar todas las configuraciones |
+| GET | `/api/stack-configs/:id` | Ver una configuración |
+| POST | `/api/stack-configs` | Crear configuración |
+| PUT | `/api/stack-configs/:id` | Editar configuración |
+| DELETE | `/api/stack-configs/:id` | Eliminar (soft delete) |
+
+### Dimensions
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
 | GET | `/api/dimensions` | Listar todas las dimensiones |
-| GET | `/api/inventory` | Listar inventario completo |
+| GET | `/api/dimensions/:id` | Ver una dimensión |
+| POST | `/api/dimensions` | Crear dimensión |
+| PUT | `/api/dimensions/:id` | Editar dimensión |
+| DELETE | `/api/dimensions/:id` | Eliminar (soft delete) |
+
+### Inventory Packages
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/api/inventory` | Listar inventario |
+| GET | `/api/inventory/:id` | Ver un paquete |
+| POST | `/api/inventory` | Crear paquete (calcula m³) |
+| PUT | `/api/inventory/:id` | Editar paquete |
+| DELETE | `/api/inventory/:id` | Eliminar (soft delete) |
+
+### Stock
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/api/stock` | Ver stock consolidado |
 
 ---
 
 ## Estructura de la Base de Datos
 
 ```
-roles ← role_permissions → permissions
-         ↑
-       users
-         ↓
-dimensions ← inventory_packages → inventory_movements
-       ↑
+dimensions ← inventory_packages
+      ↑
 stack_configurations
-         ↓
-  daily_production_log
+      ↓
+daily_production_log
 ```
 
 ### Tablas
 
 | Tabla | Descripción |
 |-------|-------------|
-| `roles` | Tipos de usuario (admin, operario) |
-| `permissions` | Acciones del sistema |
-| `users` | Usuarios del sistema |
-| `dimensions` | Catálogo de medidas (espesor x ancho x largo) |
-| `stack_configurations` | Configuraciones de apilamiento |
+| `stack_configurations` | Configuraciones de apilamiento (piezas por fila x columna) |
+| `dimensions` | Catálogo de medidas (espesor x ancho x largo en mm) |
 | `inventory_packages` | Paquetes de madera registrados |
-| `inventory_movements` | Historial de cambios |
 | `daily_production_log` | Resúmenes diarios de producción |
+
+### Vistas
+
+| Vista | Descripción |
+|-------|-------------|
+| `v_inventory_full` | Inventario completo con datos de dimensión y stack |
+| `v_stock_consolidated` | Stock agrupado por dimensión, status y configuración |
+
+---
+
+## Lógica de Negocio
+
+### Cálculo Automático de Paquetes
+
+Al crear un `inventory_package`:
+
+```
+unit_count = stack_config.width × stack_config.height
+cubic_meters = (thickness × width × length × unit_count) / 1,000,000,000
+```
+
+### Tipos de Configuración
+
+- **Estándar**: El paquete usa la configuración por defecto de la dimensión
+- **Especial**: El paquete usa una configuración diferente a la estándar
+
+### Estados de Paquete
+
+- `disponible`: Disponible para venta
+- `reservado`: Reservado para un cliente
+- `vendido`: Ya vendido
+- `eliminado`: Eliminado (soft delete)
 
 ---
 
@@ -97,26 +161,54 @@ stack_configurations
 ```
 src/
 ├── config/
-│   └── db.config.js        # Pool de PostgreSQL
+│   └── db.config.js           # Pool de PostgreSQL
 ├── controllers/
 │   ├── dimensions.controller.js
+│   ├── stackConfigs.controller.js
 │   └── inventory.controller.js
 ├── services/
-│   ├── query.helper.js     # Helper reutilizable para queries
+│   ├── query.helper.js        # Helper reutilizable para queries
 │   ├── dimension.service.js
+│   ├── stackConfigs.service.js
 │   └── inventory.service.js
 ├── routes/
 │   ├── dimensions.routes.js
+│   ├── stackConfigs.routes.js
 │   └── inventory.routes.js
 ├── middlewares/
-│   ├── errorHandler.middleware.js
+│   ├── errorHandler.middleware.js  # Manejo centralizado de errores
 │   └── errorSimulator.middleware.js
+├── utils/
+│   └── errors.js              # Clases de errores personalizadas
 └── index.js
 ```
 
 ---
 
-## Simulación de Errores
+## Sistema de Errores
+
+El proyecto implementa clases de errores personalizadas en `src/utils/errors.js`:
+
+| Clase | Status | Uso |
+|-------|--------|-----|
+| `AppError` | 500 | Error base del sistema |
+| `ValidationError` | 400 | Datos inválidos (incluye `errors` array) |
+| `NotFoundError` | 404 | Recurso no encontrado |
+| `ConflictError` | 409 | Conflicto de datos (ej: duplicado) |
+| `DatabaseError` | 500 | Error de base de datos |
+
+### Validaciones Implementadas
+
+| Campo | Validación |
+|-------|------------|
+| IDs numéricos | `parseInt` + `isNaN` + `> 0` + límite máximo (`2147483647`) |
+| Tipos de datos | Verificación de `typeof` para strings/numbers |
+| Límites numéricos | `MAX_ID_VALUE`, `MAX_DIMENSION_VALUE` (99999.99), `MAX_NAME_LENGTH` (100) |
+| Fechas | Formato `YYYY-MM-DD` + validación de fecha válida + no futura |
+| Status inventario | Lista blanca: `disponible`, `reservado`, `vendido`, `eliminado` |
+| Campos activos | Verifica `is_active = true` para dimensiones y stack_configs |
+
+### Simulación de Errores
 
 Para probar el manejo de errores:
 
@@ -127,6 +219,14 @@ Para probar el manejo de errores:
 | `simulate=database` | 3D000 | 404 | Base de datos no existe |
 | `simulate=query` | 42601 | 400 | Sintaxis SQL inválida |
 
-**Prueba:** Usa el archivo `src/requests/errorSimulation.rest` con la extensión ClientREST de VSCode.
+**Prueba:** Usa el archivo `requests/errorSimulation.rest` con la extensión ClientREST de VSCode.
 
 ---
+
+## Roadmap
+
+- [x] Fase 1: Estructura de carpetas y schema de BD
+- [x] Fase 2: CRUD completo de stack_configs, dimensions e inventory
+- [x] Fase 3: Validaciones implementadas (tipos, rangos, límites, fechas)
+- [ ] Fase 4: Reportes y resúmenes (producción diaria)
+- [ ] Fase 5: Autenticación y autorización
