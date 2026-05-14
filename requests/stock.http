@@ -1,0 +1,6 @@
+### ==================== STOCK ====================
+
+@baseURL = http://localhost:3001
+
+### GET Stock Consolidado (agrupado por dimension, status, stack)
+GET {{baseURL}}/api/stock

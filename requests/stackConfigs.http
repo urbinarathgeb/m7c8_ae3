@@ -1,0 +1,122 @@
+### ==================== STACK CONFIGS ====================
+
+@baseURL = http://localhost:3001
+
+### GET All Stack Configs
+GET {{baseURL}}/api/stack-configs
+
+### GET Stack Config by ID (válido)
+GET {{baseURL}}/api/stack-configs/1
+
+### GET Stack Config by ID (ID inválido - no numérico)
+GET {{baseURL}}/api/stack-configs/abc
+
+### GET Stack Config by ID (ID inválido - número negativo)
+GET {{baseURL}}/api/stack-configs/-1
+
+### GET Stack Config by ID (ID no existe)
+GET {{baseURL}}/api/stack-configs/999
+
+### POST Create Stack Config (válido)
+POST {{baseURL}}/api/stack-configs
+Content-Type: application/json
+
+{
+  "name": "Stack 25x25",
+  "width": 25,
+  "height": 25
+}
+
+### POST Create Stack Config (ERROR - name faltante)
+POST {{baseURL}}/api/stack-configs
+Content-Type: application/json
+
+{
+  "width": 25,
+  "height": 25
+}
+
+### POST Create Stack Config (ERROR - width = 0)
+POST {{baseURL}}/api/stack-configs
+Content-Type: application/json
+
+{
+  "name": "Stack 0x10",
+  "width": 0,
+  "height": 10
+}
+
+### POST Create Stack Config (ERROR - height negativo)
+POST {{baseURL}}/api/stack-configs
+Content-Type: application/json
+
+{
+  "name": "Stack 10x-5",
+  "width": 10,
+  "height": -5
+}
+
+### POST Create Stack Config (ERROR - width y height ya existen)
+POST {{baseURL}}/api/stack-configs
+Content-Type: application/json
+
+{
+  "name": "Stack 11x34 Duplicado",
+  "width": 11,
+  "height": 34
+}
+
+### POST Create Stack Config (ERROR - nombre ya existe)
+POST {{baseURL}}/api/stack-configs
+Content-Type: application/json
+
+{
+  "name": "Stack 11x34",
+  "width": 20,
+  "height": 20
+}
+
+### PUT Update Stack Config (válido)
+PUT {{baseURL}}/api/stack-configs/14
+Content-Type: application/json
+
+{
+  "name": "Stack 4x4 Modificado",
+  "height": 5
+}
+
+### PUT Update Stack Config (ERROR - ID inválido)
+PUT {{baseURL}}/api/stack-configs/abc
+Content-Type: application/json
+
+{
+  "name": "Test"
+}
+
+### PUT Update Stack Config (ERROR - width = 0)
+PUT {{baseURL}}/api/stack-configs/14
+Content-Type: application/json
+
+{
+  "width": 0
+}
+
+### PUT Update Stack Config (ERROR - ID no existe)
+PUT {{baseURL}}/api/stack-configs/999
+Content-Type: application/json
+
+{
+  "name": "Test"
+}
+
+### DELETE Stack Config (válido - no está en uso)
+DELETE {{baseURL}}/api/stack-configs/14
+
+### DELETE Stack Config (ERROR - ID inválido)
+DELETE {{baseURL}}/api/stack-configs/abc
+
+### DELETE Stack Config (ERROR - ID no existe)
+DELETE {{baseURL}}/api/stack-configs/999
+
+### DELETE Stack Config (ERROR - está en uso)
+DELETE {{baseURL}}/api/stack-configs/1

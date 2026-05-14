@@ -1,18 +1,16 @@
-@baseUrl = http://localhost:
-@port = 3001
-@url = {{baseUrl}}{{port}}
+@baseURL = http://localhost:3001
 
 ### Simular error de conexión (ECONNREFUSED)
-GET {{url}}/api/dimensions?simulate=connection
+GET {{baseURL}}/api/dimensions?simulate=connection
 
 ### Simular error de autenticación (28P01)
-GET {{url}}/api/dimensions?simulate=auth
+GET {{baseURL}}/api/dimensions?simulate=auth
 
 ### Simular error de base de datos (3D000)
-GET {{url}}/api/dimensions?simulate=database
+GET {{baseURL}}/api/dimensions?simulate=database
 
 ### Simular error de query SQL (42601)
-GET {{url}}/api/dimensions?simulate=query
+GET {{baseURL}}/api/dimensions?simulate=query
 
 ### Probar ruta inexistente (404)
-GET {{url}}/api/ruta-inexistente
+GET {{baseURL}}/api/ruta-inexistente

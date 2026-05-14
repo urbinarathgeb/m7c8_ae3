@@ -1,0 +1,161 @@
+@baseURL = http://localhost:3001
+
+### ==================== DIMENSIONS ====================
+
+### GET All Dimensions
+GET {{baseURL}}/api/dimensions
+
+### GET Dimension by ID (válido)
+GET {{baseURL}}/api/dimensions/1
+
+### GET Dimension by ID (ERROR - ID inválido no numérico)
+GET {{baseURL}}/api/dimensions/abc
+
+### GET Dimension by ID (ERROR - ID número negativo)
+GET {{baseURL}}/api/dimensions/-1
+
+### GET Dimension by ID (ERROR - ID no existe)
+GET {{baseURL}}/api/dimensions/999
+
+### POST Create Dimension (válido)
+POST {{baseURL}}/api/dimensions
+Content-Type: application/json
+
+{
+  "thickness": 30,
+  "width": 120,
+  "length": 4000,
+  "stack_config_id": 1
+}
+
+### POST Create Dimension (ERROR - campos requeridos faltantes)
+POST {{baseURL}}/api/dimensions
+Content-Type: application/json
+
+{
+  "thickness": 30,
+  "width": 120
+}
+
+### POST Create Dimension (ERROR - valores <= 0)
+POST {{baseURL}}/api/dimensions
+Content-Type: application/json
+
+{
+  "thickness": 0,
+  "width": 120,
+  "length": 4000
+}
+
+### POST Create Dimension (ERROR - dimensión duplicada)
+POST {{baseURL}}/api/dimensions
+Content-Type: application/json
+
+{
+  "thickness": 18,
+  "width": 90,
+  "length": 3600
+}
+
+### POST Create Dimension (ERROR - stack_config_id inválido)
+POST {{baseURL}}/api/dimensions
+Content-Type: application/json
+
+{
+  "thickness": 30,
+  "width": 120,
+  "length": 4000,
+  "stack_config_id": "abc"
+}
+
+### POST Create Dimension (ERROR - stack_config_id no existe)
+POST {{baseURL}}/api/dimensions
+Content-Type: application/json
+
+{
+  "thickness": 30,
+  "width": 120,
+  "length": 4000,
+  "stack_config_id": 999
+}
+
+### POST Create Dimension (válido sin stack_config_id)
+POST {{baseURL}}/api/dimensions
+Content-Type: application/json
+
+{
+  "thickness": 25,
+  "width": 110,
+  "length": 4200
+}
+
+### PUT Update Dimension (válido)
+PUT {{baseURL}}/api/dimensions/11
+Content-Type: application/json
+
+{
+  "thickness": 20,
+  "stack_config_id": 2
+}
+
+### PUT Update Dimension (ERROR - ID inválido)
+PUT {{baseURL}}/api/dimensions/abc
+Content-Type: application/json
+
+{
+  "thickness": 20
+}
+
+### PUT Update Dimension (ERROR - ID no existe)
+PUT {{baseURL}}/api/dimensions/999
+Content-Type: application/json
+
+{
+  "thickness": 20
+}
+
+### PUT Update Dimension (ERROR - thickness = 0)
+PUT {{baseURL}}/api/dimensions/11
+Content-Type: application/json
+
+{
+  "thickness": 0
+}
+
+### PUT Update Dimension (ERROR - dimensión duplicada)
+PUT {{baseURL}}/api/dimensions/11
+Content-Type: application/json
+
+{
+  "thickness": 18,
+  "width": 90,
+  "length": 3600
+}
+
+### PUT Update Dimension (ERROR - stack_config_id inválido)
+PUT {{baseURL}}/api/dimensions/11
+Content-Type: application/json
+
+{
+  "stack_config_id": "abc"
+}
+
+### PUT Update Dimension (ERROR - stack_config_id no existe)
+PUT {{baseURL}}/api/dimensions/11
+Content-Type: application/json
+
+{
+  "stack_config_id": 999
+}
+
+### DELETE Dimension (válido - no está en uso)
+DELETE {{baseURL}}/api/dimensions/12
+
+### DELETE Dimension (ERROR - ID inválido)
+DELETE {{baseURL}}/api/dimensions/abc
+
+### DELETE Dimension (ERROR - ID no existe)
+DELETE {{baseURL}}/api/dimensions/999
+
+### DELETE Dimension (ERROR - ya desactivada)
+DELETE {{baseURL}}/api/dimensions/12

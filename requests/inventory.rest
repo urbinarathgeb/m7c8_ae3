@@ -1,0 +1,230 @@
+@baseURL = http://localhost:3001
+
+### ==================== INVENTORY ====================
+
+### GET All Inventory (sin filtros)
+GET {{baseURL}}/api/inventory
+
+### GET All Inventory (filtro por status)
+GET {{baseURL}}/api/inventory?status=disponible
+
+### GET All Inventory (filtro por status inválido)
+GET {{baseURL}}/api/inventory?status=invalid_status
+
+### GET All Inventory (filtro por fecha)
+GET {{baseURL}}/api/inventory?date=2026-04-27
+
+### GET All Inventory (filtro rango de fechas)
+GET {{baseURL}}/api/inventory?from_date=2026-04-01&to_date=2026-05-31
+
+### GET All Inventory (filtro por dimension_id)
+GET {{baseURL}}/api/inventory?dimension_id=1
+
+### GET Inventory by ID (válido)
+GET {{baseURL}}/api/inventory/1
+
+### GET Inventory by ID (ERROR - ID inválido no numérico)
+GET {{baseURL}}/api/inventory/abc
+
+### GET Inventory by ID (ERROR - ID número negativo)
+GET {{baseURL}}/api/inventory/-1
+
+### GET Inventory by ID (ERROR - ID no existe)
+GET {{baseURL}}/api/inventory/999
+
+### POST Create Inventory (ERROR - dimension_id faltante)
+POST {{baseURL}}/api/inventory
+Content-Type: application/json
+
+{
+  "stack_config_id": 1,
+  "production_date": "2026-05-13",
+  "notes": "Sin dimension_id"
+}
+
+### POST Create Inventory (ERROR - stack_config_id faltante)
+POST {{baseURL}}/api/inventory
+Content-Type: application/json
+
+{
+  "dimension_id": 1,
+  "production_date": "2026-05-13",
+  "notes": "Sin stack_config_id"
+}
+
+### POST Create Inventory (ERROR - dimension_id inválido no numérico)
+POST {{baseURL}}/api/inventory
+Content-Type: application/json
+
+{
+  "dimension_id": "abc",
+  "stack_config_id": 1,
+  "production_date": "2026-05-13"
+}
+
+### POST Create Inventory (ERROR - dimension_id <= 0)
+POST {{baseURL}}/api/inventory
+Content-Type: application/json
+
+{
+  "dimension_id": 0,
+  "stack_config_id": 1,
+  "production_date": "2026-05-13"
+}
+
+### POST Create Inventory (ERROR - stack_config_id inválido)
+POST {{baseURL}}/api/inventory
+Content-Type: application/json
+
+{
+  "dimension_id": 1,
+  "stack_config_id": "abc",
+  "production_date": "2026-05-13"
+}
+
+### POST Create Inventory (ERROR - dimension_id no existe)
+POST {{baseURL}}/api/inventory
+Content-Type: application/json
+
+{
+  "dimension_id": 999,
+  "stack_config_id": 1,
+  "production_date": "2026-05-13"
+}
+
+### POST Create Inventory (ERROR - stack_config_id no existe)
+POST {{baseURL}}/api/inventory
+Content-Type: application/json
+
+{
+  "dimension_id": 1,
+  "stack_config_id": 999,
+  "production_date": "2026-05-13"
+}
+
+### POST Create Inventory (ERROR - fecha futura)
+POST {{baseURL}}/api/inventory
+Content-Type: application/json
+
+{
+  "dimension_id": 1,
+  "stack_config_id": 1,
+  "production_date": "2030-01-01"
+}
+
+### POST Create Inventory (ERROR - formato fecha inválido)
+POST {{baseURL}}/api/inventory
+Content-Type: application/json
+
+{
+  "dimension_id": 1,
+  "stack_config_id": 1,
+  "production_date": "13/05/2026"
+}
+
+### POST Create Inventory (válido - fecha de hoy)
+POST {{baseURL}}/api/inventory
+Content-Type: application/json
+
+{
+  "dimension_id": 1,
+  "stack_config_id": 1,
+  "production_date": "2026-05-13",
+  "notes": "Paquete de prueba"
+}
+
+### POST Create Inventory (válido - sin fecha, usa fecha actual)
+POST {{baseURL}}/api/inventory
+Content-Type: application/json
+
+{
+  "dimension_id": 2,
+  "stack_config_id": 2
+}
+
+### PUT Update Inventory (cambiar status)
+PUT {{baseURL}}/api/inventory/1
+Content-Type: application/json
+
+{
+  "status": "vendido"
+}
+
+### PUT Update Inventory (ERROR - ID inválido)
+PUT {{baseURL}}/api/inventory/abc
+Content-Type: application/json
+
+{
+  "status": "reservado"
+}
+
+### PUT Update Inventory (ERROR - ID no existe)
+PUT {{baseURL}}/api/inventory/999
+Content-Type: application/json
+
+{
+  "status": "reservado"
+}
+
+### PUT Update Inventory (ERROR - paquete eliminado)
+PUT {{baseURL}}/api/inventory/1
+Content-Type: application/json
+
+{
+  "status": "disponible"
+}
+
+### PUT Update Inventory (ERROR - status inválido)
+PUT {{baseURL}}/api/inventory/2
+Content-Type: application/json
+
+{
+  "status": "invalid_status"
+}
+
+### PUT Update Inventory (ERROR - formato fecha inválido)
+PUT {{baseURL}}/api/inventory/2
+Content-Type: application/json
+
+{
+  "production_date": "13-05-2026"
+}
+
+### PUT Update Inventory (ERROR - stack_config_id inválido)
+PUT {{baseURL}}/api/inventory/2
+Content-Type: application/json
+
+{
+  "stack_config_id": "abc"
+}
+
+### PUT Update Inventory (ERROR - stack_config_id no existe)
+PUT {{baseURL}}/api/inventory/2
+Content-Type: application/json
+
+{
+  "stack_config_id": 999
+}
+
+### PUT Update Inventory (cambiar stack_config)
+PUT {{baseURL}}/api/inventory/2
+Content-Type: application/json
+
+{
+  "stack_config_id": 3
+}
+
+### DELETE Inventory (válido)
+DELETE {{baseURL}}/api/inventory/2
+
+### DELETE Inventory (ERROR - ID inválido)
+DELETE {{baseURL}}/api/inventory/abc
+
+### DELETE Inventory (ERROR - ID no existe)
+DELETE {{baseURL}}/api/inventory/999
+
+### DELETE Inventory (ERROR - ya eliminado)
+DELETE {{baseURL}}/api/inventory/2
+
+### GET Stock
+GET {{baseURL}}/api/stock
