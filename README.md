@@ -207,6 +207,7 @@ El proyecto implementa clases de errores personalizadas en `src/utils/errors.js`
 | Fechas | Formato `YYYY-MM-DD` + validación de fecha válida + no futura |
 | Status inventario | Lista blanca: `disponible`, `reservado`, `vendido`, `eliminado` |
 | Campos activos | Verifica `is_active = true` para dimensiones y stack_configs |
+| stack_config_id en dimensions | **Requerido** - Cada dimensión debe tener una configuración de stack asignada |
 
 ### Simulación de Errores
 

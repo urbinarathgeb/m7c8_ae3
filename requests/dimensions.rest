@@ -79,7 +79,7 @@ Content-Type: application/json
   "stack_config_id": 999
 }
 
-### POST Create Dimension (válido sin stack_config_id)
+### POST Create Dimension (ERROR - stack_config_id faltante)
 POST {{baseURL}}/api/dimensions
 Content-Type: application/json
 

@@ -127,38 +127,43 @@ export const createDimension = async (req, res, next) => {
 			});
 		}
 
-		let stackConfigIdNum;
-		if (stack_config_id !== undefined && stack_config_id !== null) {
-			if (typeof stack_config_id !== 'number' && typeof stack_config_id !== 'string') {
-				return res.status(400).json({
-					success: false,
-					status: 400,
-					message: 'El campo stack_config_id debe ser un número'
-				});
-			}
-			stackConfigIdNum = parseInt(stack_config_id, 10);
-			if (isNaN(stackConfigIdNum) || stackConfigIdNum <= 0 || stackConfigIdNum > MAX_ID_VALUE) {
-				return res.status(400).json({
-					success: false,
-					status: 400,
-					message: 'El campo stack_config_id debe ser un número válido mayor a 0'
-				});
-			}
-			const stackConfig = await stackConfigsService.findById(stackConfigIdNum);
-			if (!stackConfig) {
-				return res.status(400).json({
-					success: false,
-					status: 400,
-					message: 'La configuración de stack no existe'
-				});
-			}
-			if (!stackConfig.is_active) {
-				return res.status(400).json({
-					success: false,
-					status: 400,
-					message: 'La configuración de stack está desactivada'
-				});
-			}
+		if (stack_config_id === undefined || stack_config_id === null) {
+			return res.status(400).json({
+				success: false,
+				status: 400,
+				message: 'El campo stack_config_id es requerido'
+			});
+		}
+
+		if (typeof stack_config_id !== 'number' && typeof stack_config_id !== 'string') {
+			return res.status(400).json({
+				success: false,
+				status: 400,
+				message: 'El campo stack_config_id debe ser un número'
+			});
+		}
+		const stackConfigIdNum = parseInt(stack_config_id, 10);
+		if (isNaN(stackConfigIdNum) || stackConfigIdNum <= 0 || stackConfigIdNum > MAX_ID_VALUE) {
+			return res.status(400).json({
+				success: false,
+				status: 400,
+				message: 'El campo stack_config_id debe ser un número válido mayor a 0'
+			});
+		}
+		const stackConfig = await stackConfigsService.findById(stackConfigIdNum);
+		if (!stackConfig) {
+			return res.status(400).json({
+				success: false,
+				status: 400,
+				message: 'La configuración de stack no existe'
+			});
+		}
+		if (!stackConfig.is_active) {
+			return res.status(400).json({
+				success: false,
+				status: 400,
+				message: 'La configuración de stack está desactivada'
+			});
 		}
 
 		const dimension = await dimensionService.create({thickness: thicknessNum, width: widthNum, length: lengthNum, stack_config_id: stackConfigIdNum});

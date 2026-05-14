@@ -27,7 +27,7 @@ CREATE TABLE dimensions (
     thickness       DECIMAL(7, 2) NOT NULL CHECK (thickness > 0),
     width           DECIMAL(7, 2) NOT NULL CHECK (width > 0),
     length          DECIMAL(7, 2) NOT NULL CHECK (length > 0),
-    stack_config_id INTEGER REFERENCES stack_configurations (id),
+    stack_config_id INTEGER NOT NULL REFERENCES stack_configurations (id),
     is_active       BOOLEAN DEFAULT true,
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (thickness, width, length)
