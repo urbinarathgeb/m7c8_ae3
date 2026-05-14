@@ -44,23 +44,6 @@ npm run dev
 npm start
 ```
 
-## Estado del Proyecto
-
-### Fase 2 ✅ Completada
-- Schema simplificado (4 tablas + 2 vistas)
-- CRUD completo de stack_configurations
-- CRUD completo de dimensions
-- CRUD completo de inventory_packages
-- Endpoint de stock consolidado
-- Cálculo automático de unit_count y cubic_meters
-
-### Fase 3 ✅ Completada
-- Validación de tipos de datos (string/number)
-- Límites máximos en campos numéricos y de texto
-- Validación de fechas (formato YYYY-MM-DD, no futura)
-- Clases de errores personalizadas (AppError, ValidationError, NotFoundError, etc.)
-- Verificación de estado activo en dimensiones y stack_configs
-
 ---
 
 ## Endpoints API
@@ -236,11 +219,3 @@ Para probar el manejo de errores:
 **Prueba:** Usa el archivo `requests/errorSimulation.rest` con la extensión ClientREST de VSCode.
 
 ---
-
-## Roadmap
-
-- [x] Fase 1: Estructura de carpetas y schema de BD
-- [x] Fase 2: CRUD completo de stack_configs, dimensions e inventory
-- [x] Fase 3: Validaciones implementadas (tipos, rangos, límites, fechas)
-- [ ] Fase 4: Reportes y resúmenes (producción diaria)
-- [ ] Fase 5: Autenticación y autorización
