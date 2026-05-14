@@ -159,3 +159,35 @@ DELETE {{baseURL}}/api/dimensions/999
 
 ### DELETE Dimension (ERROR - ya desactivada)
 DELETE {{baseURL}}/api/dimensions/12
+
+### ==================== TESTS ADICIONALES DE VALIDACIONES ====================
+
+### POST Create Dimension (ERROR - stack_config_id null explícito)
+POST {{baseURL}}/api/dimensions
+Content-Type: application/json
+
+{
+  "thickness": 30,
+  "width": 120,
+  "length": 5000,
+  "stack_config_id": null
+}
+
+### POST Create Dimension (ERROR - stack_config_id no existe)
+POST {{baseURL}}/api/dimensions
+Content-Type: application/json
+
+{
+  "thickness": 35,
+  "width": 130,
+  "length": 5000,
+  "stack_config_id": 999
+}
+
+### PUT Update Dimension (ERROR - stack_config_id null)
+PUT {{baseURL}}/api/dimensions/11
+Content-Type: application/json
+
+{
+  "stack_config_id": null
+}

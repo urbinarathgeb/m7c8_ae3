@@ -27,21 +27,24 @@ export class DimensionService {
 			throw new ValidationError('Los campos thickness, width y length son requeridos');
 		}
 
-		if (stack_config_id !== null && stack_config_id !== undefined) {
-			if (typeof stack_config_id !== 'number' || stack_config_id <= 0) {
-				throw new ValidationError('El ID de configuración de stack debe ser un número válido mayor a 0');
-			}
-			const stackExists = await this.stackConfigExists(stack_config_id);
-			if (!stackExists) {
-				throw new NotFoundError('La configuración de stack no existe o está desactivada');
-			}
+		if (stack_config_id === undefined || stack_config_id === null) {
+			throw new ValidationError('El campo stack_config_id es requerido');
+		}
+
+		if (typeof stack_config_id !== 'number' || stack_config_id <= 0) {
+			throw new ValidationError('El ID de configuración de stack debe ser un número válido mayor a 0');
+		}
+
+		const stackExists = await this.stackConfigExists(stack_config_id);
+		if (!stackExists) {
+			throw new NotFoundError('La configuración de stack no existe o está desactivada');
 		}
 
 		return await executeQueryOne(
 			`INSERT INTO dimensions (thickness, width, length, stack_config_id)
              VALUES ($1, $2, $3, $4)
              RETURNING *`,
-			[thickness, width, length, stack_config_id || null]
+			[thickness, width, length, stack_config_id]
 		);
 	}
 
@@ -68,17 +71,18 @@ export class DimensionService {
 			values.push(length);
 		}
 		if (stack_config_id !== undefined) {
-			if (stack_config_id !== null && (typeof stack_config_id !== 'number' || stack_config_id <= 0)) {
+			if (stack_config_id === null) {
+				throw new ValidationError('El campo stack_config_id no puede ser null');
+			}
+			if (typeof stack_config_id !== 'number' || stack_config_id <= 0) {
 				throw new ValidationError('El ID de configuración de stack debe ser un número válido mayor a 0');
 			}
-			if (stack_config_id !== null) {
-				const stackExists = await this.stackConfigExists(stack_config_id);
-				if (!stackExists) {
-					throw new NotFoundError('La configuración de stack no existe o está desactivada');
-				}
+			const stackExists = await this.stackConfigExists(stack_config_id);
+			if (!stackExists) {
+				throw new NotFoundError('La configuración de stack no existe o está desactivada');
 			}
 			fields.push(`stack_config_id = $${paramIndex++}`);
-			values.push(stack_config_id || null);
+			values.push(stack_config_id);
 		}
 
 		if (fields.length === 0) {
@@ -130,7 +134,7 @@ export class DimensionService {
 	}
 
 	async stackConfigExists(stack_config_id) {
-		if (!stack_config_id) return true;
+		if (!stack_config_id || typeof stack_config_id !== 'number') return false;
 		const result = await executeQueryOne(
 			'SELECT COUNT(*) as count FROM stack_configurations WHERE id = $1 AND is_active = true',
 			[stack_config_id]

@@ -284,12 +284,22 @@ export const deleteStackConfig = async (req, res, next) => {
 			});
 		}
 
-		const inUse = await stackConfigsService.isInUse(idNum);
-		if (inUse) {
+		const inUseByInventory = await stackConfigsService.isInUse(idNum);
+		const inUseByDimensions = await stackConfigsService.isUsedByDimensions(idNum);
+
+		if (inUseByInventory) {
 			return res.status(400).json({
 				success: false,
 				status: 400,
 				message: 'No se puede eliminar: hay paquetes de inventario asociados a esta configuración'
+			});
+		}
+
+		if (inUseByDimensions) {
+			return res.status(400).json({
+				success: false,
+				status: 400,
+				message: 'No se puede eliminar: hay dimensiones asociadas a esta configuración'
 			});
 		}
 

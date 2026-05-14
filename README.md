@@ -154,6 +154,18 @@ cubic_meters = (thickness × width × length × unit_count) / 1,000,000,000
 - `vendido`: Ya vendido
 - `eliminado`: Eliminado (soft delete)
 
+### Integridad Referencial
+
+**Reglas de negocio para eliminar recursos:**
+
+| Recurso | ¿Se puede eliminar si está en uso? |
+|---------|-------------------------------------|
+| Stack Config | ❌ No si está asociado a una dimensión activa |
+| Stack Config | ❌ No si tiene paquetes de inventario asociados |
+| Dimensión | ⚠️ Sí, pero hace soft delete si tiene paquetes asociados |
+| Dimensión | ✅ Sí, eliminación directa si no tiene paquetes |
+| Inventory Package | ❌ Siempre soft delete (cambia status a 'eliminado') |
+
 ---
 
 ## Arquitectura
@@ -207,7 +219,8 @@ El proyecto implementa clases de errores personalizadas en `src/utils/errors.js`
 | Fechas | Formato `YYYY-MM-DD` + validación de fecha válida + no futura |
 | Status inventario | Lista blanca: `disponible`, `reservado`, `vendido`, `eliminado` |
 | Campos activos | Verifica `is_active = true` para dimensiones y stack_configs |
-| stack_config_id en dimensions | **Requerido** - Cada dimensión debe tener una configuración de stack asignada |
+| stack_config_id en dimensions | **Requerido** - No puede ser null ni omitido |
+| Integridad referencial | No permite eliminar stack_configs asociados a dimensiones o inventario |
 
 ### Simulación de Errores
 

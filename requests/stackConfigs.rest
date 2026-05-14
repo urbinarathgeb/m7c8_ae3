@@ -118,5 +118,44 @@ DELETE {{baseURL}}/api/stack-configs/abc
 ### DELETE Stack Config (ERROR - ID no existe)
 DELETE {{baseURL}}/api/stack-configs/999
 
-### DELETE Stack Config (ERROR - está en uso)
+### DELETE Stack Config (ERROR - está en uso por inventory)
 DELETE {{baseURL}}/api/stack-configs/1
+
+### DELETE Stack Config (ERROR - está en uso por dimensions)
+### Usar un stack_config que esté asociado a una dimensión (ej: id=1 está en dimensión id=4)
+DELETE {{baseURL}}/api/stack-configs/4
+
+### DELETE Stack Config (ERROR - desactivado previamente)
+DELETE {{baseURL}}/api/stack-configs/14
+
+### ==================== TESTS DE FLUJO COMPLETO ====================
+
+### POST Crear stack config para test
+POST {{baseURL}}/api/stack-configs
+Content-Type: application/json
+
+{
+  "name": "Stack Temporal Test",
+  "width": 99,
+  "height": 99
+}
+
+### POST Crear dimensión con el stack config anterior
+POST {{baseURL}}/api/dimensions
+Content-Type: application/json
+
+{
+  "thickness": 99,
+  "width": 199,
+  "length": 9999,
+  "stack_config_id": 15
+}
+
+### DELETE Intentar eliminar el stack config (debe fallar - está en dimensión)
+DELETE {{baseURL}}/api/stack-configs/15
+
+### DELETE Eliminar la dimensión primero
+DELETE {{baseURL}}/api/dimensions/15
+
+### DELETE Ahora sí eliminar el stack config (debe funcionar)
+DELETE {{baseURL}}/api/stack-configs/15

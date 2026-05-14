@@ -66,6 +66,14 @@ export class StackConfigsService {
 		return parseInt(result.count) > 0;
 	}
 
+	async isUsedByDimensions(id) {
+		const result = await executeQueryOne(
+			'SELECT COUNT(*) as count FROM dimensions WHERE stack_config_id = $1 AND is_active = true',
+			[id]
+		);
+		return parseInt(result.count) > 0;
+	}
+
 	async isUnique(width, height, excludeId = null) {
 		if (excludeId) {
 			const result = await executeQueryOne(
